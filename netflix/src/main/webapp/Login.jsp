@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="estilo-login.css">
+    <link rel="stylesheet" href="Recursos/Estilo/estilo-login.css">
     <title>Inicio Sesión Netflix</title>
 </head>
 <body>
