@@ -11,7 +11,7 @@ package modelo;
 public class Reserva {
 
     private int idReserva;
-    private String fechaReserva; // String as per diagram, consider LocalDate if it's a date
+    private String fechaReserva;
     private String estado;
 
     public Reserva() {

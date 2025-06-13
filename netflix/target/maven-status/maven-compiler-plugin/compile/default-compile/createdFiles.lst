@@ -1,8 +1,0 @@
-com/netflix/dao/UsuarioDAO.class
-com/netflix/modelo/Reclamo.class
-com/netflix/modelo/Reporte.class
-com/netflix/servlets/LoginServlet.class
-com/netflix/servlets/LogoutServlet.class
-com/netflix/util/conexion/conexion.class
-com/netflix/util/pruebaConexion.class
-com/netflix/modelo/Usuario.class

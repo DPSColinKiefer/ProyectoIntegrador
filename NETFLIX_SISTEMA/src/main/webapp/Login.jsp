@@ -13,8 +13,17 @@
         <button onclick="location.href='#'">Return to Netflix</button>
     </header>
     <section class="div-login">
-        <form action="Verificar-user-admin.jsp" method="post">
+        <form action="LoginServlet" method="post"> <%-- !!! Changed action to LoginServlet !!! --%>
             <h3>Sign In</h3>
+            <%-- Display error message if present --%>
+            <%
+                String error = (String) request.getAttribute("error");
+                if (error != null) {
+            %>
+                <p style="color: red;"><%= error %></p>
+            <%
+                }
+            %>
             <input type="email" name="email" id="email" placeholder="Email or Mobile Number" required ><br>
             <input type="password" name="password" id="contrasenia" placeholder="Password" required > <br>
             <button type="submit">Sign In</button>

@@ -7,7 +7,7 @@ public class Reporte {
     private int idReporte;
     private String titulo;
     private LocalDateTime fechaGeneracion;
-    private String descripcion; // String type mapped to String
+    private String descripcion;
 
     public Reporte() {
     }
