@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%-- Agrega esta directiva para usar JSTL Core --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,13 +12,27 @@
 <body>
  <header>
     <img src="Recursos/Imagenes/logo-netflix.png" alt="Netflix" id="logo-netflix">
-    <button onclick="location.href='#'">Return to Netflix</button>
+    <%-- Asumo que este botón debería ir a la raíz de la app o a alguna página de inicio pública --%>
+    <button onclick="location.href='${pageContext.request.contextPath}/index.jsp'">Return to Netflix</button>
  </header>
  <section class="div-login">
-    <form action="Verificar-user-admin.jsp" method="post">
+    <%-- El action del formulario debe apuntar al LoginServlet --%>
+    <%-- Usamos ${pageContext.request.contextPath} para obtener la ruta base de tu aplicación --%>
+    <form action="${pageContext.request.contextPath}/login" method="post">
          <h3>Sign In</h3>
-         <input type="email" name="email" id="email" placeholder="Email or Mobile Number" required ><br>
-         <input type="password" name="password" id="contrasenia" placeholder="Password" required > <br>
+
+         <%-- Mostrar mensaje de error si existe (enviado por el Servlet) --%>
+         <c:if test="${not empty requestScope.mensajeError}">
+             <p style="color: red; margin-bottom: 10px;">${requestScope.mensajeError}</p>
+         </c:if>
+         <%-- Mostrar mensaje de éxito si existe (útil para logout o registro exitoso) --%>
+         <c:if test="${not empty requestScope.mensajeExito}">
+             <p style="color: green; margin-bottom: 10px;">${requestScope.mensajeExito}</p>
+         </c:if>
+
+         <input type="email" name="correo" id="email" placeholder="Email or Mobile Number" required value="${param.correo}"><br>
+         <%-- NOTA: El 'name' del input de contraseña debe ser 'contrasena' para que coincida con el Servlet --%>
+         <input type="password" name="contrasena" id="contrasenia" placeholder="Password" required > <br>
         <button type="submit">Sign In</button>
     </form>
     <p><a href="#">Forgot password?</a></p>
