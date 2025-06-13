@@ -2,30 +2,34 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package modelo;
+package DTOS;
 
 import java.time.LocalDateTime;
-import java.sql.*;
 
-public class Usuario {
+/**
+ *
+ * @author colin
+ */
+public class UsuarioDTO {
     private int id;
     private String nombre;
     private String correo;
+    private String contrasenaHash;
     private boolean estado;
     private LocalDateTime fechaRegistro;
-    private String contrasena;
     private String rol;
     
-    public Usuario() {}
+    // Constructores
+    public UsuarioDTO() {}
     
-    public Usuario(int id, String nombre, String correo, boolean estado, 
-                   LocalDateTime fechaRegistro, String contrasena, String rol) {
+    public UsuarioDTO(int id, String nombre, String correo, String contrasenaHash, 
+                      boolean estado, LocalDateTime fechaRegistro, String rol) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
+        this.contrasenaHash = contrasenaHash;
         this.estado = estado;
         this.fechaRegistro = fechaRegistro;
-        this.contrasena = contrasena;
         this.rol = rol;
     }
     
@@ -39,8 +43,8 @@ public class Usuario {
     public String getCorreo() { return correo; }
     public void setCorreo(String correo) { this.correo = correo; }
     
-    public String getContrasena() { return contrasena; }
-    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+    public String getContrasenaHash() { return contrasenaHash; }
+    public void setContrasenaHash(String contrasenaHash) { this.contrasenaHash = contrasenaHash; }
     
     public boolean isEstado() { return estado; }
     public void setEstado(boolean estado) { this.estado = estado; }
@@ -53,7 +57,7 @@ public class Usuario {
     
     @Override
     public String toString() {
-        return "Usuario{" +
+        return "UsuarioDTO{" +
                "id=" + id +
                ", nombre='" + nombre + '\'' +
                ", correo='" + correo + '\'' +
@@ -63,4 +67,3 @@ public class Usuario {
                '}';
     }
 }
-

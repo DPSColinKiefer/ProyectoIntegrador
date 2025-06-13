@@ -1,105 +1,83 @@
 package DAO;
 
 
+import DTOS.UsuarioDTO;
 import util.conexion;
 import java.sql.*;
+import java.time.LocalDateTime;
+import modelo.Usuario;
 
 public class UsuarioDAO {
-
-    public boolean autenticarUsuario(String correo, String contrasena) {
-        String sql = "SELECT COUNT(*) FROM USUARIO WHERE correo = ? AND contrasena = ? AND estadoUsuario = 'ACTIVO'";
-        
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = conexion.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, correo);
-            pstmt.setString(2, contrasena);
-            
-            rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Error al autenticar usuario: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            cerrarRecursos(rs, pstmt, conn);
-        }
-        
-        return false;
+    private Connection conn;
+    
+    public UsuarioDAO(Connection conn) {
+        this.conn = conn;
     }
     
-
-    public String obtenerNombreUsuario(String correo) {
-        String sql = "SELECT nombre FROM USUARIO WHERE correo = ? AND estadoUsuario = 'ACTIVO'";
+    public UsuarioDTO validarLogin(String correo, String contrasenaHash) throws SQLException {
+        String sql = "SELECT u.id_usuario, u.nombre, u.correo, u.estado, u.fecha_registro, r.nombre_rol " +
+                     "FROM usuarios u " +
+                     "JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
+                     "JOIN roles r ON ur.id_rol = r.id_rol " +
+                     "WHERE u.correo = ? AND u.contrasena_hash = ? AND u.estado = true";
         
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = conexion.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, correo);
-            
-            rs = pstmt.executeQuery();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, correo);
+            ps.setString(2, contrasenaHash);
+            ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
-                return rs.getString("nombre");
+                UsuarioDTO usuario = new UsuarioDTO();
+                usuario.setId(rs.getInt("id_usuario"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setCorreo(rs.getString("correo"));
+                usuario.setEstado(rs.getBoolean("estado"));
+                usuario.setFechaRegistro(rs.getTimestamp("fecha_registro").toLocalDateTime());
+                usuario.setRol(rs.getString("nombre_rol"));
+                return usuario;
             }
-            
-        } catch (SQLException e) {
-            System.err.println("Error al obtener nombre de usuario: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            cerrarRecursos(rs, pstmt, conn);
         }
-        
         return null;
     }
-
-    public boolean existeCorreo(String correo) {
-        String sql = "SELECT COUNT(*) FROM USUARIO WHERE correo = ?";
+    
+    public boolean registrarUsuario(UsuarioDTO usuario) throws SQLException {
+        String sql = "INSERT INTO usuarios (nombre, correo, contrasena_hash, estado, fecha_registro) VALUES (?, ?, ?, ?, ?)";
         
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = conexion.getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, correo);
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuario.getNombre());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getContrasenaHash());
+            ps.setBoolean(4, true); // Estado activo por defecto
+            ps.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             
-            rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("Error al verificar correo: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            cerrarRecursos(rs, pstmt, conn);
+            return ps.executeUpdate() > 0;
         }
-        
-        return false;
     }
     
-
-    private void cerrarRecursos(ResultSet rs, PreparedStatement pstmt, Connection conn) {
-        try {
-            if (rs != null) rs.close();
-            if (pstmt != null) pstmt.close();
-            if (conn != null) conexion.closeConnection(conn);
-        } catch (SQLException e) {
-            System.err.println("Error al cerrar recursos: " + e.getMessage());
-        }
+    // Método para convertir Usuario a UsuarioDTO
+    public static UsuarioDTO toDTO(Usuario usuario, String contrasenaHash) {
+        return new UsuarioDTO(
+            usuario.getId(),
+            usuario.getNombre(),
+            usuario.getCorreo(),
+            contrasenaHash,
+            usuario.isEstado(),
+            usuario.getFechaRegistro(),
+            usuario.getRol()
+        );
+    }
+    
+    // Método para convertir UsuarioDTO a Usuario
+    public static Usuario fromDTO(UsuarioDTO dto) {
+        return new Usuario(
+            dto.getId(),
+            dto.getNombre(),
+            dto.getCorreo(),
+            dto.isEstado(),
+            dto.getFechaRegistro(),
+            null, // No exponemos la contraseña hash
+            dto.getRol()
+        );
     }
 }
+
